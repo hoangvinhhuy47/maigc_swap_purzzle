@@ -58,7 +58,7 @@ export default async function Page({ params }: PageProps) {
 
   return (
     <>
-      <OpenAppButton id={id} autoOpen={true} />
+   
 
       <div className="w-full h-screen bg-black flex items-center justify-center p-4">
         {imageUrl && (
@@ -68,6 +68,7 @@ export default async function Page({ params }: PageProps) {
         
           />
         )}
+           <OpenAppButton id={id} autoOpen={true} />
       </div>
     </>
   );
