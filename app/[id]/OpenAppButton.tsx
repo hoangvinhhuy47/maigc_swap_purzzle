@@ -8,9 +8,7 @@ interface OpenAppButtonProps {
   autoOpen?: boolean;
 }
 
-const currentDeep = {
-  app: "magicapp://open",
-};
+const DEEP_LINK = "magicapp://open";
 
 const STORE_URL =
   "https://play.google.com/store/apps/details?id=com.bho.ai.magicswappuzzle";
@@ -22,7 +20,7 @@ const buildDeepLink = (id: string, token?: string) => {
     params.set("token", token);
   }
 
-  return `${currentDeep.app}?${params.toString()}`;
+  return `${DEEP_LINK}?${params.toString()}`;
 };
 
 const getPlatform = () => {
@@ -46,63 +44,54 @@ export default function OpenAppButton({
   token,
   autoOpen = false,
 }: OpenAppButtonProps) {
-  const openAppInstalled = useCallback(() => {
-    const { isAndroid, isIOS } = getPlatform();
+  const openApp = useCallback(() => {
+    const { isAndroid } = getPlatform();
 
     const deepLink = buildDeepLink(id, token);
 
-    let appOpened = false;
+    let pageHidden = false;
 
-    const handleVisibilityChange = () => {
+    const onVisibilityChange = () => {
       if (document.hidden) {
-        appOpened = true;
+        pageHidden = true;
       }
     };
 
-    document.addEventListener(
-      "visibilitychange",
-      handleVisibilityChange
-    );
+    document.addEventListener("visibilitychange", onVisibilityChange);
 
-    // Android Chrome thường ổn hơn với replace
-    window.location.replace(deepLink);
+    // mở app
+    window.location.href = deepLink;
 
+    // fallback nếu app không mở
     setTimeout(() => {
       document.removeEventListener(
         "visibilitychange",
-        handleVisibilityChange
+        onVisibilityChange
       );
 
-      if (!appOpened) {
+      // nếu trang vẫn đang visible => app không mở
+      if (!pageHidden) {
         if (isAndroid) {
           window.location.href = STORE_URL;
-        } else if (isIOS) {
-          // TODO: App Store URL
-          // window.location.href = IOS_STORE_URL;
         }
       }
-    }, 2000);
+    }, 2500);
   }, [id, token]);
 
   useEffect(() => {
     if (!autoOpen) return;
 
-    // Delay nhẹ để tránh một số browser chặn ngay lúc page render
     const timer = setTimeout(() => {
-      openAppInstalled();
-    }, 300);
+      openApp();
+    }, 400);
 
     return () => clearTimeout(timer);
-  }, [autoOpen, openAppInstalled]);
-
-  if (autoOpen) {
-    return null;
-  }
+  }, [autoOpen, openApp]);
 
   return (
     <button
       type="button"
-      onClick={openAppInstalled}
+      onClick={openApp}
       className="mt-6 rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700"
     >
       Open app
