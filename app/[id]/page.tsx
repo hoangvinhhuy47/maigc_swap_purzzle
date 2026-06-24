@@ -9,13 +9,15 @@ interface PageProps {
 
 const decodeImageUrl = (encoded: string) => {
   try {
-    // hỗ trợ cả base64 và base64Url
-    const normalized = encoded
-      .replace(/-/g, "+")
-      .replace(/_/g, "/");
+    console.log("encoded =", encoded);
 
-    return Buffer.from(normalized, "base64").toString("utf8");
-  } catch {
+    const result = Buffer.from(encoded, "base64").toString("utf8");
+
+    console.log("decoded =", result);
+
+    return result;
+  } catch (e) {
+    console.error(e);
     return "";
   }
 };
@@ -48,26 +50,22 @@ export async function generateMetadata({
   };
 }
 
-export default async function Page({
-  params,
-}: PageProps) {
+export default async function Page({ params }: PageProps) {
   const { id } = await params;
 
   const imageUrl = decodeImageUrl(id);
+  console.log("imageUrl =", imageUrl);
 
   return (
     <>
-      <OpenAppButton
-        id={id}
-        autoOpen={true}
-      />
+      <OpenAppButton id={id} autoOpen={true} />
 
       <div className="w-full h-screen bg-black flex items-center justify-center p-4">
         {imageUrl && (
           <img
             src={imageUrl}
-            alt="Shared Image"
-            className="h-auto max-w-sm object-contain"
+            alt="Shared"
+        
           />
         )}
       </div>

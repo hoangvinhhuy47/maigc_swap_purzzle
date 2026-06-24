@@ -35,28 +35,25 @@ export default function OpenAppButton({
   token,
   autoOpen = false,
 }: OpenAppButtonProps) {
-  const openAppInstalled = useCallback(() => {
-    const { isAndroid, isIOS } = getPlatform();
-    const url = buildDeepLink(id, token);
+const openAppInstalled = useCallback(() => {
+  const { isAndroid, isIOS } = getPlatform();
 
-    if (isAndroid) {
-      window.location.replace(url);
+  const deepLink = buildDeepLink(id, token);
 
-      window.setTimeout(() => {
-        window.location.replace(
-          "https://play.google.com/store/apps/details?id=com.bho.ai.magicswappuzzle",
-        );
-      }, 1000);
-    } else if (isIOS) {
-      window.location.replace(url);
+  const start = Date.now();
 
-      window.setTimeout(() => {
-        window.location.replace(
-           "https://play.google.com/store/apps/details?id=com.bho.ai.magicswappuzzle",
-        );
-      }, 1000);
+  window.location.href = deepLink;
+
+  setTimeout(() => {
+    const elapsed = Date.now() - start;
+
+    // Nếu app mở thì browser thường bị background
+    if (elapsed < 2500) {
+      window.location.href =
+        "https://play.google.com/store/apps/details?id=com.bho.ai.magicswappuzzle";
     }
-  }, [id, token]);
+  }, 2500);
+}, [id, token]);
 
   useEffect(() => {
     if (autoOpen) {
