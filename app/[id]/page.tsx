@@ -58,17 +58,9 @@ export default async function Page({ params }: PageProps) {
 
   return (
     <>
-   
-
-      <div className="w-full h-screen bg-black flex items-center justify-center p-4">
-        {imageUrl && (
-          <img
-            src={imageUrl}
-            alt="Shared"
-        
-          />
-        )}
-           <OpenAppButton id={id} autoOpen={true} />
+      <div className="w-full h-screen bg-black flex items-center justify-center p-4 flex-col gap-4">
+        {imageUrl && <img src={imageUrl} alt="Shared" />}
+        <OpenAppButton id={id} autoOpen={true} />
       </div>
     </>
   );
