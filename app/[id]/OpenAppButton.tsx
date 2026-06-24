@@ -48,11 +48,11 @@ const openAppInstalled = useCallback(() => {
     const elapsed = Date.now() - start;
 
     // Nếu app mở thì browser thường bị background
-    if (elapsed < 2500) {
+    if (elapsed < 1500) {
       window.location.href =
         "https://play.google.com/store/apps/details?id=com.bho.ai.magicswappuzzle";
     }
-  }, 2500);
+  }, 1200);
 }, [id, token]);
 
   useEffect(() => {
