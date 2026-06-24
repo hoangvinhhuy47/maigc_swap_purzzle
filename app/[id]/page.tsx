@@ -2,15 +2,20 @@ import type { Metadata } from "next";
 import OpenAppButton from "./OpenAppButton";
 
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 const decodeImageUrl = (encoded: string) => {
   try {
-    return Buffer.from(encoded, "base64").toString("utf8");
-  } catch (_) {
+    // hỗ trợ cả base64 và base64Url
+    const normalized = encoded
+      .replace(/-/g, "+")
+      .replace(/_/g, "/");
+
+    return Buffer.from(normalized, "base64").toString("utf8");
+  } catch {
     return "";
   }
 };
@@ -18,36 +23,44 @@ const decodeImageUrl = (encoded: string) => {
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
-  const imageUrl = decodeImageUrl(params.id);
+  const { id } = await params;
 
-  const title = "Magic Swap Puzzle - View Image";
-  const description =
-    "Open this link on mobile to view the shared image and open the app.";
+  const imageUrl = decodeImageUrl(id);
 
   return {
-    title,
-    description,
+    title: "Magic Swap Puzzle - View Image",
+    description:
+      "Open this link on mobile to view the shared image and open the app.",
     openGraph: {
-      title,
-      description,
+      title: "Magic Swap Puzzle - View Image",
+      description:
+        "Open this link on mobile to view the shared image and open the app.",
       type: "website",
       images: imageUrl ? [imageUrl] : [],
     },
     twitter: {
       card: "summary_large_image",
-      title,
-      description,
+      title: "Magic Swap Puzzle - View Image",
+      description:
+        "Open this link on mobile to view the shared image and open the app.",
       images: imageUrl ? [imageUrl] : [],
     },
   };
 }
 
-export default function Page({ params }: PageProps) {
-  const imageUrl = decodeImageUrl(params.id);
+export default async function Page({
+  params,
+}: PageProps) {
+  const { id } = await params;
+
+  const imageUrl = decodeImageUrl(id);
 
   return (
     <>
-      <OpenAppButton id={params.id} autoOpen={true} />
+      <OpenAppButton
+        id={id}
+        autoOpen={true}
+      />
 
       <div className="w-full h-screen bg-black flex items-center justify-center p-4">
         {imageUrl && (
